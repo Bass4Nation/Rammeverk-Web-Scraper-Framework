@@ -87,8 +87,11 @@ app.get("/scrapescreenshot", async (req, res) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(url);
-    await page.screenshot({ path: savepath });
-    await browser.close();
+    setTimeout(async () => {
+      await page.screenshot({ path: savepath });
+      await browser.close();
+    }, 2000);
+
   } catch (error) {
     errorcodes(error, res);
   }
