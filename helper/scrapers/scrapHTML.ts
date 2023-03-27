@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-
+// import {startArrayFromData} from "./cleanup";
 
 const useScrapHTML = (url: string) => {
   const serverUrl = "http://localhost:3002/scrape?url=";
@@ -26,17 +26,16 @@ const useScrapHTML = (url: string) => {
 };
 
 const useScrapHTMLArray = (url: string) => {
-  const serverUrl = "http://localhost:3002/scrapearray?url="; // url to the server that will scrape the html 
+  const serverUrl = "http://localhost:3002/scrapescreenshot?url="; // url to the server that will scrape the html 
   const [elements, setElements] = useState([]); 
+  // const [cleanedElements, setCleanedElements] = useState([]); // array of elements that will be returned to the component [
 
   useEffect(() => {
     const fetchHTML = async () => {
       try {
         const response = await axios.get(serverUrl + encodeURIComponent(url)); // get the html from the server sending the url
         const elementsArray = response.data;
-        console.log(elementsArray);
-        
-        
+        // console.log(elementsArray);
 
         setElements(elementsArray);
       } catch (error: any) {
@@ -47,31 +46,30 @@ const useScrapHTMLArray = (url: string) => {
     fetchHTML();
   }, [url]); // Empty array ensures the effect runs only on component mount
 
-  return elements;
 }; 
 
-export {useScrapHTML, useScrapHTMLArray};
 
-// export const useScrapScreenshot = (url: string) => {
-//     const [screenshot, setScreenshot] = useState("");
 
-//     useEffect(() => {
-//         const fetchScreenshot = async () => {
-//             try {
-//                 const response = await axios.get(serverUrl + encodeURIComponent(url));
-//                 const html = response.data;
-//                 console.log(html);
+const useScrapScreenshot = (url: string) => {
+  const serverUrl = "http://localhost:3002/scrapescreenshot?url="; // url to the server that will take screenshot of requested page.
+  const [elements, setElements] = useState([]); 
 
-//                 setScreenshot(html);
-//             } catch (error) {
-//                 console.log(error);
-//             }
-//         };
+  useEffect(() => {
+    const fetchHTML = async () => {
+      try {
+        const response = await axios.get(serverUrl + encodeURIComponent(url)); // get the html from the server sending the url
+        const elementsArray = response.data;
 
-//         fetchScreenshot();
-//     }, [url]); // Add the url to the dependency array
+        setElements(elementsArray);
+      } catch (error: any) {
+        console.log("Axios Error:", error);
+        console.log("Error details:", error.response?.data, error.response?.status, error.response?.headers);      }
+    };
 
-//     return screenshot;
-// };
+    fetchHTML();
+  }, [url]); // Empty array ensures the effect runs only on component mount
 
+}; 
+
+export {useScrapHTML, useScrapHTMLArray, useScrapScreenshot};
 // // Path: helper\scrapers\scrapHTML.ts
