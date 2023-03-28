@@ -67,6 +67,7 @@ app.get("/scrapearray", async (req, res) => {
   }
 });
 
+// ----------------- Routes for scaping and returning as array ----------------- //
 app.get("/scrapescreenshot", async (req, res) => {
   // Coming soon
   // Create folder if folder does not exist
@@ -83,6 +84,8 @@ app.get("/scrapescreenshot", async (req, res) => {
 
   const savepath = "./public/scraped-screenshots/" + filename + filetype;
 
+  const seconds = 4 * 1000;
+
   try {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -90,39 +93,53 @@ app.get("/scrapescreenshot", async (req, res) => {
     setTimeout(async () => {
       await page.screenshot({ path: savepath });
       await browser.close();
-    }, 2000);
-
+    }, seconds);
   } catch (error) {
     errorcodes(error, res);
   }
 });
 
+// ----------------- Routes for scaping and returning as array ----------------- //
 // Get a list over all screenshots taken. With filepath and a way display them.
 app.get("/scrapescreenshotlist", async (req, res) => {
   // Path to folder where screenshots is placed from standpoint to the server
   //  ./public/scraped-screenshots/......
   const folder_path = "./public/scraped-screenshots";
-
-  const arr = [
-    {
-      name: "",
-      path: "",
-    },
-  ];
   try {
+    const list = await screenshotList(folder_path);
+    console.log(list);
+    res.send(list);
   } catch (error) {
     errorcodes(error, res);
   }
 });
 
+// ----------------- Routes for Latest screenshot ----------------- //
+// Get the last screenshot taken. With filepath and a way display them.
+app.get("/lastscreenshottaken", async (req, res) => {
+  // Path to folder where screenshots is placed from standpoint to the server"
+  //  ./public/scraped-screenshots/......
+  const folder_path = "./public/scraped-screenshots";
+  try {
+    const list = await latestScreenshot(folder_path);
+    console.log(list);
+    res.send(list);
+  } catch (error) {
+    errorcodes(error, res);
+  }
+});
 
-
-// A function that convert link to this format : komplett_no_2023327164050
+// A function that convert link to this format : www_komplett_no_2023327164050
+// Remove http: or https: and replace all special characters with _
+// Fine for now. Can be used as name for files saved on server.
 async function titleFromURL(url) {
   const date = new Date();
+  // Get timestamp from 1970-01-01 00:00:00
+  const milliseconds = date.getTime();
+
   const timestamp = `${date.getFullYear()}${
     date.getMonth() + 1
-  }${date.getDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+  }${date.getDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}-${milliseconds}`;
   const filename = `${url
     .replace(/(^\w+:|^)\/\//, "")
     .replace(/[^a-zA-Z0-9_]/g, "_")}_${timestamp}`;
@@ -130,14 +147,64 @@ async function titleFromURL(url) {
   return filename;
 }
 
-// Error codes simplified 
+//  A function that returns a list of all files in a folder with path to the file.
+const screenshotList = async (folder_path) => {
+  const fs = require("fs"); // File system module to read files
+  const path = require("path"); // Path to file system folder and files in folder
+
+  const files = fs.readdirSync(folder_path); // Read all files in folder
+
+  const arr = [];
+
+  //  Loop through all files and add them to an array with path to the file.
+  files.forEach((file) => {
+    arr.push({
+      name: file,
+      path: path.join(folder_path, file),
+    });
+  });
+
+  return arr; // Return the array with all files in the folder.
+};
+
+// A function that returns the latest screenshot taken.
+const latestScreenshot = async (folder_path) => {
+  const allfiles = await screenshotList(folder_path); // Get all files in folder
+  let latestFile = null; // Create a variable to store the latest file
+  let maxNumber = 0; // Create a variable to store the maximum number found in filenames
+
+  // Loop through all files and check if the number in the filename is larger than the current maxNumber
+  allfiles.forEach((file) => {
+    const fileNumber = extractNumber(file.name); // Get the number from the filename
+    if (fileNumber > maxNumber) {
+      maxNumber = fileNumber;
+      latestFile = file;
+    }
+  });
+  console.log(maxNumber);
+
+  return latestFile;
+};
+
+// A function that extracts the timestamp from the filename.
+function extractNumber(filename) {
+  const regex = /.*-(\d+)\./;
+  const result = filename.match(regex);
+
+  if (result && result[1]) {
+    return parseInt(result[1], 10);
+  }
+
+  return null;
+}
+
+// Error codes simplified
 const errorcodes = (error, code) => {
   console.error(error);
   code.status(500).send("Error occurred while scraping the website");
 };
 
 // puppeteer can also make pdf. Maybe create in later stages.
-
 
 // Prints in terminal when the server is starting. It is this port that the requests are going through.
 app.listen(PORT, () => {
