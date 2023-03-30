@@ -7,6 +7,7 @@ import {
 } from "@/helper/scrapers/scrapHTML";
 import React from "react";
 import Image from "next/image";
+import styles from "../styles/Webscraper.module.css";
 
 const ScraperResult = () => {
   // This is just an example on how to use each of the hooks in my webscraper framework.
@@ -21,6 +22,8 @@ const ScraperResult = () => {
   const [triggerRaw, setTriggeRaw] = React.useState(false);
   const [triggerArray, setTriggerArray] = React.useState(false);
   const [screenshotTrigger, setScreenshotTrigger] = React.useState(false);
+
+  const [overlay, setOverlay] = React.useState(true);
 
   // -------------- Hooks  --------------
   const screenshotUrl: any = useScrapScreenshot(url, screenshotTrigger);
@@ -50,22 +53,23 @@ const ScraperResult = () => {
 
   //  -------------- Display Functions --------------
 
-
-
-
   // Display all screenshots taken from the screenshotListUrl array
   const displayAllScreenshots = () => {
     if (screenshotList.length > 0) {
       // console.log(screenshotList);
-      const path: string = "/scraped-screenshots/"
-      
+      const path: string = "/scraped-screenshots/";
+
       return screenshotList.map((item: any, index: number) => {
         // console.log(path + item.name);
-        
 
         return (
           <div key={index}>
-            <Image src={path + item.name} alt={item.name} width={200} height={200} />
+            <Image
+              src={path + item.name}
+              alt={item.name}
+              width={200}
+              height={200}
+            />
           </div>
         );
       });
@@ -77,14 +81,18 @@ const ScraperResult = () => {
   // Display the latest screenshot taken
   const displayLatestScreenshot = () => {
     console.log(latestScreenshot);
-    
+
     if (latestScreenshot) {
-      const path: string = "/scraped-screenshots/"
+      const path: string = "/scraped-screenshots/";
 
       return (
         <div>
-          <h1>Latest screenshot taken</h1>
-          <Image src={path + latestScreenshot.name} alt={latestScreenshot} width={200} height={200} />
+          <Image
+            src={path + latestScreenshot.name}
+            alt={latestScreenshot}
+            width={200}
+            height={200}
+          />
         </div>
       );
     } else {
@@ -92,42 +100,58 @@ const ScraperResult = () => {
     }
   };
 
-
-  
-const displayScreenshot = () => {
-
-}
+  const displayWarning = () => {
+    return (
+      <div className={styles.warning}>
+        <div>
+          <h2>Warning</h2>
+          <p>
+            This is a proof of concept. Do not use this on websites that you do
+            not have permission to scrape. Or checked after if the website has a
+            robots.txt file that disallows web scraping.
+          </p>
+          <button onClick={() => setOverlay(false)}>Close</button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
-      <div>
-        <label>
-          URL:
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-        </label>
-        <button onClick={handleBtnClickScreenshot}>Scrape Screenshot</button>
-        <button onClick={handleBtnClickRaw}>Scrape raw data</button>
-        <button onClick={handleBtnClickArray}>Scrape data to array</button>
+    {/*  This is just an warning when first running. Since it is a webscraper after all */}
+      {/* {overlay ? displayWarning() : null}   */}
 
-      </div>
-      <div>
-        <h1>Last screenshot taken</h1>
-        {displayLatestScreenshot()}
-      </div>
-      <div>
-        <h1>Data from array</h1>
-      </div>
-      <div>
-        <h1>Raw data</h1>
-      </div>
+      <div className={styles.webscraper}>
+        <div className={styles.search}>
+          <label>
+            URL:
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className={styles.input}
+            />
+          </label>
+          <button onClick={handleBtnClickScreenshot}>Scrape Screenshot</button>
+          <button onClick={handleBtnClickRaw}>Scrape raw data</button>
+          <button onClick={handleBtnClickArray}>Scrape data to array</button>
+        </div>
+        <div className={styles.data}>
+          <h2>Latest screenshot taken</h2>
+          {displayLatestScreenshot()}
+        </div>
+        <div className={styles.data}>
+          <h2>Data from array</h2>
+        </div>
+        <div className={styles.data}>
+          <h2>Raw data</h2>
+        </div>
 
-      <div>
-        {/* All pictures in screenshotslist displayed here */}
-        {displayAllScreenshots()}
+        <div className={styles.all_images}>
+          {/* All pictures in screenshotslist displayed here */}
+          <h2>All screenshots taken</h2>
+          {displayAllScreenshots()}
+        </div>
       </div>
     </>
   );
