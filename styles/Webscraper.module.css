@@ -58,6 +58,8 @@
     transition: 0.5s;
     box-shadow:  0 0 10px 0 black;
     background-color: rgba(0, 0, 0, 0.377);
+    width: 100%;
+
 }
 
 .webscraper input {
@@ -76,6 +78,7 @@
     transition: 0.5s;
     border: 1px solid black;
     cursor: pointer;
+    width: 90%;
 
 }
 .webscraper input:focus {
@@ -183,6 +186,34 @@
 
 }
 
+.webscraper .raw_data {
+    display: flex;
+    flex-wrap: wrap;
+    word-break: break-all;
+    width: 90%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+/* --------------- Refresh button ----------- */
+
+.webscraper .refresh_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    box-shadow:  0 0 10px 0 black;
+    border-radius: 25px;
+    background-color: rgba(0, 0, 0, 0.377);
+
+}
+
+
+
+
+
+/* ----------------- WARNING OVERLAY STYLING ---------------- */
 /* A warning section that is a popup overlay  */
 .warning {
     display: flex;

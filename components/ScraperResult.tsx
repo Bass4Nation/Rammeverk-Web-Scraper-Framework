@@ -47,10 +47,6 @@ const ScraperResult = () => {
     setScreenshotTrigger(!screenshotTrigger);
   };
 
-  // const handleBtnClickScreenshotList = () => {
-  //   setScreenshotListTrigger(!screenshotListTrigger);
-  // };
-
   //  -------------- Display Functions --------------
 
   // Display all screenshots taken from the screenshotListUrl array
@@ -80,7 +76,7 @@ const ScraperResult = () => {
 
   // Display the latest screenshot taken
   const displayLatestScreenshot = () => {
-    console.log(latestScreenshot);
+    // console.log(latestScreenshot);
 
     if (latestScreenshot) {
       const path: string = "/scraped-screenshots/";
@@ -100,6 +96,7 @@ const ScraperResult = () => {
     }
   };
 
+  // -------------- Warning --------------
   const displayWarning = () => {
     return (
       <div className={styles.warning}>
@@ -108,7 +105,9 @@ const ScraperResult = () => {
           <p>
             This is a proof of concept. Do not use this on websites that you do
             not have permission to scrape. Or checked after if the website has a
-            robots.txt file that disallows web scraping.
+            robots.txt file that disallows web scraping. To deactivate this
+            warning, remove the overlay state in the ScraperResult.tsx file in
+            components.
           </p>
           <button onClick={() => setOverlay(false)}>Close</button>
         </div>
@@ -116,12 +115,37 @@ const ScraperResult = () => {
     );
   };
 
+  const displayRawHTML = () => {
+    if (rawHTML) {
+      return <p className={styles.raw_data}>{rawHTML}</p>;
+    } else {
+      return <div>There is no raw data to display</div>;
+    }
+  };
+
+  const displayHTMLArray = () => {
+    if (htmlArray) {
+      return <div>{htmlArray}</div>;
+    } else {
+      return <div>There is no array data to display</div>;
+    }
+  };
+
+  // --------------- Functions ---------------
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
+  // -------------- JSX --------------
   return (
     <>
-    {/*  This is just an warning when first running. Since it is a webscraper after all */}
-      {/* {overlay ? displayWarning() : null}   */}
+      {/*  This is just an warning when first running. Since it is a webscraper after all */}
+      {overlay ? displayWarning() : null}
 
       <div className={styles.webscraper}>
+        <button onClick={refreshPage} className={styles.refresh_button}>
+          Refresh
+        </button>
         <div className={styles.search}>
           <label>
             URL:
@@ -132,9 +156,13 @@ const ScraperResult = () => {
               className={styles.input}
             />
           </label>
-          <button onClick={handleBtnClickScreenshot}>Scrape Screenshot</button>
-          <button onClick={handleBtnClickRaw}>Scrape raw data</button>
-          <button onClick={handleBtnClickArray}>Scrape data to array</button>
+          <div className={styles.buttons}>
+            <button onClick={handleBtnClickScreenshot}>
+              Scrape Screenshot
+            </button>
+            <button onClick={handleBtnClickRaw}>Scrape raw data</button>
+            <button onClick={handleBtnClickArray}>Scrape data to array</button>
+          </div>
         </div>
         <div className={styles.data}>
           <h2>Latest screenshot taken</h2>
@@ -142,9 +170,11 @@ const ScraperResult = () => {
         </div>
         <div className={styles.data}>
           <h2>Data from array</h2>
+          {displayHTMLArray()}
         </div>
         <div className={styles.data}>
           <h2>Raw data</h2>
+          {displayRawHTML()}
         </div>
 
         <div className={styles.all_images}>
