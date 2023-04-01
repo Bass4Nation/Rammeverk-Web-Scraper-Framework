@@ -1,5 +1,7 @@
-## Webscraper
-    
+# Webscraper
+ This is for a school assignment. And check if it is possible to npm install Bass4Nation/webscraper. Requirements: npm, git
+
+
 ## Getting Started
 Note: This is a work in progress. Most of the code is not yet implemented.
 #### Installation
